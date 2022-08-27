@@ -1,0 +1,5 @@
+export const GET_LAUNCHES = 'GET_LAUNCHES';
+export const LAUNCH_ERROR = 'LAUNCH_ERROR';
+export const FILTER_LAUNCHES = 'FILTER_LAUNCHES';
+export const SORT_LAUNCHES = 'SORT_LAUNCHES';
+
