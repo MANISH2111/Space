@@ -1,4 +1,4 @@
-import { View ,FlatList,Text,StyleSheet,StatusBar, TouchableOpacity, Image} from 'react-native'
+import { View ,FlatList,Text,StyleSheet, TouchableOpacity, Image} from 'react-native'
 import React,{useEffect, useCallback} from 'react'
 import styled from 'styled-components/native'
 import { FontAwesome } from '@expo/vector-icons'; 
@@ -70,7 +70,14 @@ const SpaceCard = ({ item}:any) => (
   <TouchableOpacity 
   onPress={() =>
     navigate('Details', 
-    { flight_number: item.flight_number })
+    { mission_name: item.mission_name,
+      launch_site:item.launch_site,
+      details:item.details,
+      date:item.launch_date_utc,
+      rocket:item.rocket,
+      image:item.links.mission_patch_small,
+      success:item.launch_success
+    })
     }style={styles.item}
     >
         <Image style={styles.image} source={{uri:item.links.mission_patch_small}}/>
