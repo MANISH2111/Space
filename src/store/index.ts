@@ -11,4 +11,8 @@ const store = createStore(rootReducer,
                           initialState, 
                           applyMiddleware(thunk,logger))
 
+
+export type AppDispatch=typeof store.dispatch
+export type ApplicationState = ReturnType<typeof store.getState>
+
 export { store };
