@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 type Props = {
 	route: RouteProp<MainStackParamList, 'Details'>;
 };
+
 const Wrapper = styled(FlexCol)`
 	padding: 15px;
 	flex: 1;
@@ -40,7 +41,7 @@ const  Details: React.ComponentType<Props>=({route})=> {
         image,launch_success}:any=route.params
 
   return (
-    <SafeAreaView>
+
     <ScrollView 
     contentContainerStyle={styles.view}
     showsVerticalScrollIndicator={false}>
@@ -62,7 +63,7 @@ const  Details: React.ComponentType<Props>=({route})=> {
       </CText>
 
       <Gutter/>
-      <Gutter/>
+    
 
          <Container>
           <FlexRow justifyContent={'space-between'}>
@@ -138,26 +139,27 @@ const  Details: React.ComponentType<Props>=({route})=> {
           </FlexRow>
         </Container>
      
-     
+     <Gutter spacing={1}/>
       </Wrapper>
-
+     
     </ScrollView>
-    </SafeAreaView>
+   
   )
 }
 
 const styles = StyleSheet.create({
   
   view: {
+    scrollView: { flexGrow: 1 },
     flex:1,
-    flexGrow:1,
     justifyContent:'center',
     alignItems:'center', 
   },
   image:{
     width:250,
     height:250,
-    alignSelf:'center'
+    alignSelf:'center',
+    aspectRatio:1,
   },
 
 
