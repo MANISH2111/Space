@@ -1,54 +1,88 @@
 import { Button, FlatList,StyleSheet, Text, TouchableOpacity, View, } from 'react-native'
-import React,{useEffect, useCallback,useState, useRef, useMemo} from 'react'
+import React,{useEffect, useCallback,useState, useRef} from 'react'
 import styled from 'styled-components/native'
 import { FontAwesome } from '@expo/vector-icons'; 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons ,Ionicons} from '@expo/vector-icons';
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
+import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
+import { StackNavigationProp } from '@react-navigation/stack'
 
 import { FlexCol, FlexRow } from '../../components/atom/Flex'
 import { useAppDispatch,useAppSelector } from '../../hooks'
-import { getLaunches } from '../../store/actions'
+import { getLaunches, sortLaunches } from '../../store/actions'
 import { MainStackParamList } from '../../navigation'
 import { SpaceCard } from './component/SpaceCard';
-
-import { StackNavigationProp } from '@react-navigation/stack'
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { Gutter } from '../../components/atom';
-import { SortModal } from './component/sortModal';
+import { SORT_DATA } from '../../data';
+
 
 const Wrapper = styled(FlexCol)`
 	padding: 5px;
 	height: 100%;
 	flex: 1;
-	background-color: 'grey';
+  background-color:#ffffff;
   justify-content:center;
   align-items:center;
+`
+const CText=styled(Text)<{isSelected?: string}>`
+font-size:15px;
+font-weight:${(props) =>
+		props.isSelected ? 'bold':'normal' };;
 `
 
 
 type Props = {
 	navigation: StackNavigationProp<MainStackParamList, 'SpaceX_Launches'>;
 }
+type Sort={
+  sort?:String
+}
 
 const Home : React.ComponentType<Props>=({ navigation })=> {
 
-const [sortShow,setShortShow]=useState(false)
-const [filterShow,setFilterShow]=useState(false)
+  
 
-const bottomSheetRef = useRef<BottomSheet>(null);
+const SortObj:Sort={
+  sort:'',
+}
 
-const onSortShow=useCallback(async()=>{
-  bottomSheetRef.current?.expand();
-},[])
-const handleClosePress = useCallback(() => {
-  bottomSheetRef.current?.close();
-}, []);
-const snapPoints = useMemo(() => ['25%', '50%'], []);
+const [value,setValue]=useState<String>('name')
+const [sortObj,setSortObj]=useState(SortObj)
 
+const handleSort = ( val:String) => {
+  const obj = Object.assign({}, sortObj, {
+      sort: val,
+  });
+  setSortObj(obj);
+    //@ts-ignore
+  dispatch(sortLaunches(obj));
+  setValue(val);
+}
+
+
+
+  const bottomSortSheetModalRef = useRef<BottomSheetModal>(null);
+
+  const bottomFilterSheetModalRef=useRef<BottomSheetModal>(null);
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSortSheetModalRef.current?.present();
+  }, []);
+  const handleSortSheetChanges = useCallback((index: number) => {
+    bottomSortSheetModalRef.current?.snapToIndex(index);
+  }, []);
+
+  const handlePresentFiterPress = useCallback(() => {
+    bottomFilterSheetModalRef.current?.present();
+  }, []);
+  const handleFilterSheetChanges = useCallback((index: number) => {
+    bottomFilterSheetModalRef.current?.snapToIndex(index);
+  }, []);
 
 
 const dispatch=useAppDispatch()
 
-const data=useAppSelector(state=>state.launch.launches)
+const data=useAppSelector(state=>state.launch.filteredLaunches)
 
 React.useLayoutEffect(() => {
 
@@ -56,14 +90,12 @@ React.useLayoutEffect(() => {
       headerRight: () => (
         
                 <FlexRow>
-                  <TouchableOpacity onPress={onSortShow} style={styles.icon} >
-                        <MaterialCommunityIcons name="sort" size={22} color="grey" />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity onPress={()=>{}} style={styles.icon} >
-                         <FontAwesome name="filter" size={22} color="grey" />
-                  </TouchableOpacity>
-                      
+                        <TouchableOpacity onPress={handlePresentModalPress} >
+                        <MaterialCommunityIcons style={styles.icon} name="sort" size={22} color="grey" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handlePresentFiterPress} >
+                         <FontAwesome   style={styles.icon} name="filter" size={22} color="grey" />
+                         </TouchableOpacity>
                 </FlexRow>
       ),
     });
@@ -73,6 +105,17 @@ React.useLayoutEffect(() => {
 const RenderCard = useCallback(({ item }:any) => {
 		return <SpaceCard item={item} />;
 	}, []);
+
+  const renderBackdrop = useCallback(
+    (    props: JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={0}
+        appearsOnIndex={1}
+      />
+    ),
+    []
+  );
 
 useEffect(() => {
   //@ts-ignore
@@ -91,24 +134,57 @@ useEffect(() => {
                       numColumns={2}
           />
 
-<BottomSheet
-					ref={bottomSheetRef}
-					index={1}
-					snapPoints={snapPoints}
-					enableContentPanningGesture={false}
-					enableHandlePanningGesture={false}
-					enableOverDrag={false}
-					enablePanDownToClose={false}
-					handleIndicatorStyle={{
-						width: 0,
-					}}
-					style={styles.bottomSheet}
-				>
-					<View style={styles.bottomSheet}>
-        
-					</View>
-				</BottomSheet>
+<BottomSheetModalProvider>
+<BottomSheetModal
+          backdropComponent={renderBackdrop}
+          ref={bottomSortSheetModalRef}
+          index={1}
+          snapPoints={[1,'25%']}
+          onChange={handleSortSheetChanges}
+        >
+          <View style={styles.container}>
+            <CText>Sort</CText>
+           <Gutter spacing={1.3}/>
 
+            <FlexCol justifyContent='center' alignItems='center' >
+            
+            {SORT_DATA.map((item,index)=>{
+              const name=item.value
+            
+              return(
+              <TouchableOpacity key={index} onPress={()=>handleSort(name)}>
+                  <FlexRow >
+                   <CText>{item.name}</CText>
+                     <Gutter hSpacing={10}/>
+                      <Ionicons name="checkmark-sharp" size={24} color="green" />
+                   </FlexRow>
+                  <Gutter spacing={1.3}/>
+            </TouchableOpacity>)
+            
+})}
+
+            </FlexCol>
+            
+          </View>
+
+</BottomSheetModal>
+</BottomSheetModalProvider>
+
+<BottomSheetModalProvider>
+<BottomSheetModal
+          ref={bottomFilterSheetModalRef}
+          backdropComponent={renderBackdrop}
+          index={1}
+          snapPoints={[1,'65%']}
+          onChange={handleFilterSheetChanges}
+        >
+<View style={styles.container}>
+            <Text>Filter 🎉</Text>
+          </View>
+
+</BottomSheetModal>
+</BottomSheetModalProvider>
+      
     </Wrapper>
   )
 }
@@ -121,10 +197,19 @@ icon:{
 paddingRight:15
 },
 bottomSheet:{
-  paddingHorizontal:32
+  paddingHorizontal:10,
+ 
 },
 container:{
-  flex:1
+  flex:1,
+  position:'relative',
+  alignItems:'center',
+  justifyContent:'center'
+},
+close:{
+  position:'absolute',
+  top:1,
+  right:1
 }
 });
 

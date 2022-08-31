@@ -6,7 +6,7 @@ import moment from 'moment';
 import { MainStackParamList } from '../navigation';
 import type { RouteProp } from '@react-navigation/native';
 import { FlexCol, FlexRow, Gutter } from '../components/atom';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
 const Wrapper = styled(FlexCol)`
 	padding: 15px;
 	flex: 1;
-	background-color: 'grey';
+	background-color: #ffffff;
 `
 const CText=styled(Text)<{fSize?:number,fWeight?:string,color?:string,align?:string}>`
   font-size:${props=>props.fSize?`${props.fSize}px`:`14px`};
@@ -27,7 +27,7 @@ const CText=styled(Text)<{fSize?:number,fWeight?:string,color?:string,align?:str
 const Container=styled(View)`
   padding:8px;
   border-radius:8px;
-  border:1px solid gray;
+  border:1px solid #e5e2e2;
   margin:3px;
 `
 
@@ -62,7 +62,7 @@ const  Details: React.ComponentType<Props>=({route})=> {
         {moment(date).format('LL')}
       </CText>
 
-      <Gutter/>
+      <Gutter spacing={2}/>
     
 
          <Container>
@@ -151,9 +151,9 @@ const styles = StyleSheet.create({
   
   view: {
     scrollView: { flexGrow: 1 },
-    flex:1,
     justifyContent:'center',
     alignItems:'center', 
+    flex1:{flex:1},
   },
   image:{
     width:250,

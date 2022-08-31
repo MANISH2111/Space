@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet,Image ,Text,  View,TouchableOpacity} from 'react-native'
 import styled from 'styled-components/native';
 import { navigate } from '../../../services'
+
+
 const SuccessWrapper=styled(View)<{isSuccess:boolean}>`
     position:absolute;
     top:0;

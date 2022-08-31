@@ -12,10 +12,10 @@ export default function App() {
     <Provider store={store}>
       <SafeAreaProvider>
   
-     <LoadNavigator>
-       <MainStack/>
-     </LoadNavigator>
-   
+        <LoadNavigator>
+          <MainStack/>
+        </LoadNavigator>
+      
     </SafeAreaProvider>
     </Provider>
 
