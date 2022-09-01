@@ -1,6 +1,8 @@
+import moment from 'moment';
 import React from 'react';
 import { StyleSheet,Image ,Text,  View,TouchableOpacity} from 'react-native'
 import styled from 'styled-components/native';
+import { FlexCol, FlexRow} from '../../../components/atom';
 import { navigate } from '../../../services'
 
 
@@ -12,18 +14,32 @@ const SuccessWrapper=styled(View)<{isSuccess:boolean}>`
     height:15px;
     opacity:0.8;
     background-color:${(props) =>
-		props.isSuccess ? '#FFA3A3' :'#90EE8F' };
+		props.isSuccess ? '#90EE8F':'#FFA3A3' };
     border-bottom-left-radius:8px;
-    border-top-left-radius:8px
+    border-top-left-radius:8px;
 `
-const SuccessText=styled(Text)`
+const SuccessText=styled(Text)<{isSuccess:boolean}>`
     font-weight:bold;
     font-size:10px;
-    color:#0a0a25c6 ;
-    text-align:center
+    color:${(props) =>
+		props.isSuccess ? '#013e00':'#850000' }; ;
+    text-align:center;
+`
+const CText=styled(Text)`
+  color:grey;
+  font-size:12px;
+`
+
+const NText=styled(Text)`
+  font-size:13px;
+  font-weight:bold;
+  padding-left:10px;
+  color:#6b6b6b;
+
 `
 
 const SpaceCard = ({ item}:any) => (
+  <FlexCol>
   <TouchableOpacity 
   onPress={() =>
     navigate('Details', 
@@ -39,39 +55,44 @@ const SpaceCard = ({ item}:any) => (
     >
         <Image style={styles.image} source={{uri:item.links.mission_patch_small}}/>
 
-        <Text style={styles.title}>{item.mission_name}</Text>
-
         <SuccessWrapper isSuccess={item.launch_success}>
 
-              <SuccessText  >{item.launch_success?'success':"failure"}</SuccessText>
+              <SuccessText isSuccess={item.launch_success}  >{item.launch_success?'success':"failed"}</SuccessText>
 
         </SuccessWrapper>
 
   </TouchableOpacity>
+
+  <NText>{item.mission_name}</NText>
+  <NText>{item.rocket.rocket_name}</NText>
+
+<FlexRow  justifyContent='space-around'>
+  
+  <CText>{item.upcoming?'upcoming':'completed'}</CText>
+  <CText>{moment(item.launch_date_utc).format('MMM D, YYYY')}</CText>
+
+</FlexRow>
+  </FlexCol>
 );
 
 const styles=StyleSheet.create({
     item: {
     position:'relative',
-    backgroundColor: '#d5e5e7c7',
+    backgroundColor: '#f1f7f8fe',
     justifyContent:'center',
     alignItems:'center',
-    marginVertical: 8,
+    marginVertical: 11,
     marginHorizontal: 8,
     width:150,
     height:150,
     borderRadius:8
     
   },
-  title: {
-    fontSize: 14,
-    color:'black',
-    overflow:'hidden'
-  },
+
   image:{
-    
     width:120,
-    height:120
+    height:120,
+    
   },
 })
 

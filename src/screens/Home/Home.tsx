@@ -14,7 +14,7 @@ import { MainStackParamList } from '../../navigation'
 import { SpaceCard } from './component/SpaceCard';
 import { Gutter } from '../../components/atom';
 import { SORT_DATA } from '../../data';
-
+import { FilterButton } from './component/Filter';
 
 const Wrapper = styled(FlexCol)`
 	padding: 5px;
@@ -24,10 +24,11 @@ const Wrapper = styled(FlexCol)`
   justify-content:center;
   align-items:center;
 `
-const CText=styled(Text)<{isSelected?: string}>`
+const CText=styled(Text)<{isSelected?:Boolean}>`
 font-size:15px;
 font-weight:${(props) =>
-		props.isSelected ? 'bold':'normal' };;
+		props.isSelected ? 'bold':'normal' };
+text-align:center;
 `
 
 
@@ -45,9 +46,14 @@ const Home : React.ComponentType<Props>=({ navigation })=> {
 const SortObj:Sort={
   sort:'',
 }
+const FilterO={
+  
+  upcoming:[],
+}
 
 const [value,setValue]=useState<String>('name')
 const [sortObj,setSortObj]=useState(SortObj)
+const[filterObj,setFilterObj]=useState(null)
 
 const handleSort = ( val:String) => {
   const obj = Object.assign({}, sortObj, {
@@ -117,6 +123,11 @@ const RenderCard = useCallback(({ item }:any) => {
     []
   );
 
+
+  const FilterCard=useCallback(({isSelcted}:any)=>{
+        return <FilterButton />
+  },[])
+
 useEffect(() => {
   //@ts-ignore
   dispatch(getLaunches());
@@ -149,22 +160,19 @@ useEffect(() => {
             <FlexCol justifyContent='center' alignItems='center' >
             
             {SORT_DATA.map((item,index)=>{
-              const name=item.value
-            
+              const name:String=item.value
+              const isFocused=value===name
               return(
               <TouchableOpacity key={index} onPress={()=>handleSort(name)}>
                   <FlexRow >
-                   <CText>{item.name}</CText>
+                   <CText isSelected={isFocused}>{item.name}</CText>
                      <Gutter hSpacing={10}/>
-                      <Ionicons name="checkmark-sharp" size={24} color="green" />
+                      <Ionicons name="checkmark-sharp" size={24} color={isFocused?'#148512':'gray'} />
                    </FlexRow>
                   <Gutter spacing={1.3}/>
-            </TouchableOpacity>)
-            
-})}
-
-            </FlexCol>
-            
+            </TouchableOpacity>) 
+             })}
+            </FlexCol> 
           </View>
 
 </BottomSheetModal>
@@ -178,8 +186,9 @@ useEffect(() => {
           snapPoints={[1,'65%']}
           onChange={handleFilterSheetChanges}
         >
-<View style={styles.container}>
-            <Text>Filter 🎉</Text>
+          <View style={styles.container}>
+                <Text>Filter 🎉</Text>
+                <FilterButton/>
           </View>
 
 </BottomSheetModal>
@@ -206,11 +215,7 @@ container:{
   alignItems:'center',
   justifyContent:'center'
 },
-close:{
-  position:'absolute',
-  top:1,
-  right:1
-}
+
 });
 
 export{Home}

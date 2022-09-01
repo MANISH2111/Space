@@ -1,6 +1,6 @@
 
 import moment from 'moment';
-import { DATA_LOADING, GET_LAUNCHES, LaunchActionTypes, SORT_LAUNCHES} from '../types';
+import { DATA_LOADING, FILTER_LAUNCHES, GET_LAUNCHES, LaunchActionTypes, SORT_LAUNCHES} from '../types';
 
 type InitialState={
     launches:any,
@@ -48,6 +48,7 @@ export default function (state = initialState, action: LaunchActionTypes) {
                     filteredLaunches: sortData,
                     loading: false,
                 };
+            
         default:
             return state;
     }
