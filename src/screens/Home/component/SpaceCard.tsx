@@ -5,24 +5,25 @@ import styled from 'styled-components/native';
 import { FlexCol, FlexRow} from '../../../components/atom';
 import { navigate } from '../../../services'
 
-
 const SuccessWrapper=styled(View)<{isSuccess:boolean}>`
     position:absolute;
     top:0;
     right:0;
     width:50px;
     height:15px;
-    opacity:0.8;
+    opacity:0.9;
     background-color:${(props) =>
-		props.isSuccess ? '#90EE8F':'#FFA3A3' };
+		props.isSuccess ? '#cff3cf':'#fbdada' };
     border-bottom-left-radius:8px;
     border-top-left-radius:8px;
+    border-top-right-radius:8px;
+    
 `
 const SuccessText=styled(Text)<{isSuccess:boolean}>`
     font-weight:bold;
     font-size:10px;
     color:${(props) =>
-		props.isSuccess ? '#013e00':'#850000' }; ;
+		props.isSuccess ? '#085a07':'#830505' }; 
     text-align:center;
 `
 const CText=styled(Text)`
@@ -39,7 +40,7 @@ const NText=styled(Text)`
 `
 
 const SpaceCard = ({ item}:any) => (
-  <FlexCol>
+  <FlexCol alignSelf='center'>
   <TouchableOpacity 
   onPress={() =>
     navigate('Details', 
@@ -57,7 +58,7 @@ const SpaceCard = ({ item}:any) => (
 
         <SuccessWrapper isSuccess={item.launch_success}>
 
-              <SuccessText isSuccess={item.launch_success}  >{item.launch_success?'success':"failed"}</SuccessText>
+              <SuccessText isSuccess={item.launch_success}  >{item.launch_success?'Success':"Failed"}</SuccessText>
 
         </SuccessWrapper>
 
@@ -85,14 +86,11 @@ const styles=StyleSheet.create({
     marginHorizontal: 8,
     width:150,
     height:150,
-    borderRadius:8
-    
+    borderRadius:8 
   },
-
   image:{
     width:120,
-    height:120,
-    
+    height:120, 
   },
 })
 

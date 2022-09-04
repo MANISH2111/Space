@@ -4,29 +4,32 @@ import {  Text, TouchableOpacity,} from 'react-native'
 
 type Props={
     isSelected?:Boolean
-    onPres?:()=>void
+    onPress?:()=>void
+    name:String
 }
 
 const Select=styled(TouchableOpacity)<{isSelected?:Boolean}> `
     width:110px;
     height:40px;
-    border:1px solid grey;
+    border:${(props) =>
+		props.isSelected ? '1px solid black':'1px solid grey' };;
     text-align:center;
     justify-content:center;
     border-radius:20px;
+    margin-top:15px;
 `
 
 const CText=styled(Text)<{isSelected?:Boolean}>`
-font-size:15px;
+font-size:14px;
 font-weight:${(props) =>
-		props.isSelected ? 'bold':'normal' };
+		props.isSelected ? 600:'normal' };
 text-align:center;
 `
-const FilterButton:React.ComponentType<Props>=({isSelected})=>{
+const FilterButton:React.ComponentType<Props>=({isSelected,onPress,name})=>{
 
     return(
-        <Select  isSelected={isSelected}> 
-            <CText>UPCOMING</CText>
+        <Select onPress={onPress} isSelected={isSelected}> 
+            <CText isSelected={isSelected} >{name}</CText>
         </Select>
     )
 }

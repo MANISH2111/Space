@@ -13,11 +13,11 @@ import { getLaunches, sortLaunches } from '../../store/actions'
 import { MainStackParamList } from '../../navigation'
 import { SpaceCard } from './component/SpaceCard';
 import { Gutter } from '../../components/atom';
-import { SORT_DATA } from '../../data';
+import { SORT_DATA, } from '../../data';
 import { FilterButton } from './component/Filter';
 
 const Wrapper = styled(FlexCol)`
-	padding: 5px;
+  padding:10px;
 	height: 100%;
 	flex: 1;
   background-color:#ffffff;
@@ -30,6 +30,17 @@ font-weight:${(props) =>
 		props.isSelected ? 'bold':'normal' };
 text-align:center;
 `
+const RocketButton=styled(FlexRow)`
+  width:65%;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  margin-left:10px;
+`
+const NText=styled(Text)<{fSize?:number,fWeight?:string,align?:string}>`
+  font-size:${props=>props.fSize?`${props.fSize}px`:`14px`};
+  font-weight:${props=>props.fWeight?`${props.fWeight}`:`normal`};
+  text-align:${props=>props.align?props.align:`center`};
+`
 
 
 type Props = {
@@ -38,29 +49,77 @@ type Props = {
 type Sort={
   sort?:String
 }
+type Filter={
+  rockets?:[]
+}
 
 const Home : React.ComponentType<Props>=({ navigation })=> {
 
-  
+  const dispatch=useAppDispatch()
 
+  const data=useAppSelector(state=>state.launch.filteredLaunches)
+
+  const rocketData=(data: { rocket: { rocket_name: String; }; }[])=>{
+    let temp:any=[]
+    data.forEach((element: { rocket: { rocket_name: String; }; }) => {
+      let x=temp.includes(element.rocket.rocket_name)
+     if(!x){
+      temp.push(element.rocket.rocket_name)
+     }
+    });
+    return temp
+  }
+  
+  const rocketArray=rocketData(data)
+  
+  const rocketsDataArray = rocketArray.slice().map(function (item: { [x: string]: any; },i: any) {
+    var obj = {};
+    obj['id']=i
+    obj['name']=item
+    obj['selected']=false
+    return obj;
+  });
+    
+  
 const SortObj:Sort={
   sort:'',
 }
-const FilterO={
-  
-  upcoming:[],
+
+const FObj:Filter={
+  rockets:[]
 }
 
-const [value,setValue]=useState<String>('name')
+const [rocketsFilter,setRocketsFilter]=useState(rocketsDataArray)
+
+const [value,setValue]=useState<String>('date')
+
 const [sortObj,setSortObj]=useState(SortObj)
-const[filterObj,setFilterObj]=useState(null)
+
+const[isSelected,setIsSelected]=useState(false)
+
+const[filterObj,setFilterObj]=useState(FObj)
+
+
+const handleFilterSelect=(val: any,index: any)=>{
+  let temp=rocketsFilter.map((item: any,i: any)=>{
+    return index===i?{...item,selected:val}:item
+  })
+  setRocketsFilter(temp)
+  setIsSelected(!isSelected)
+  const obj=Object.assign({},filterObj,{
+   
+ 
+  })
+  setFilterObj(obj)
+}
+console.log('SSSSSSSSSSSSSS',filterObj)
 
 const handleSort = ( val:String) => {
   const obj = Object.assign({}, sortObj, {
       sort: val,
   });
   setSortObj(obj);
-    //@ts-ignore
+   //@ts-ignore
   dispatch(sortLaunches(obj));
   setValue(val);
 }
@@ -85,11 +144,6 @@ const handleSort = ( val:String) => {
     bottomFilterSheetModalRef.current?.snapToIndex(index);
   }, []);
 
-
-const dispatch=useAppDispatch()
-
-const data=useAppSelector(state=>state.launch.filteredLaunches)
-
 React.useLayoutEffect(() => {
 
     navigation.setOptions({
@@ -109,7 +163,8 @@ React.useLayoutEffect(() => {
 
 
 const RenderCard = useCallback(({ item }:any) => {
-		return <SpaceCard item={item} />;
+		return <SpaceCard item={item} />
+   
 	}, []);
 
   const renderBackdrop = useCallback(
@@ -124,9 +179,7 @@ const RenderCard = useCallback(({ item }:any) => {
   );
 
 
-  const FilterCard=useCallback(({isSelcted}:any)=>{
-        return <FilterButton />
-  },[])
+ 
 
 useEffect(() => {
   //@ts-ignore
@@ -139,10 +192,10 @@ useEffect(() => {
           <FlatList 
           data={data}
           renderItem={({ item }) => (
-                      <RenderCard 
-                      key={item.flight_number}
-                      item={item} />)}              
-                      numColumns={2}
+                <RenderCard 
+                  key={item.flight_number}
+                  item={item} />)}              
+                  numColumns={2}
           />
 
 <BottomSheetModalProvider>
@@ -153,8 +206,8 @@ useEffect(() => {
           snapPoints={[1,'25%']}
           onChange={handleSortSheetChanges}
         >
-          <View style={styles.container}>
-            <CText>Sort</CText>
+          <View >
+            <NText fSize={16} fWeight='bold'>Sort</NText>
            <Gutter spacing={1.3}/>
 
             <FlexCol justifyContent='center' alignItems='center' >
@@ -162,6 +215,7 @@ useEffect(() => {
             {SORT_DATA.map((item,index)=>{
               const name:String=item.value
               const isFocused=value===name
+
               return(
               <TouchableOpacity key={index} onPress={()=>handleSort(name)}>
                   <FlexRow >
@@ -186,9 +240,23 @@ useEffect(() => {
           snapPoints={[1,'65%']}
           onChange={handleFilterSheetChanges}
         >
-          <View style={styles.container}>
-                <Text>Filter 🎉</Text>
-                <FilterButton/>
+          <View  >
+          <NText fSize={16} fWeight='bold'>Filter</NText>
+                <RocketButton>
+                  {rocketsFilter.map((item: { name: String; selected: Boolean | undefined; },index:number)=>{
+                    return ( 
+                        <FilterButton
+                        key={index} 
+                        name={item.name} 
+                        isSelected={rocketsFilter[index].selected}
+                        onPress={()=>handleFilterSelect(!item.selected,index)}
+                        />
+                        )
+                    
+                      })}
+                   
+                   </RocketButton>
+                
           </View>
 
 </BottomSheetModal>
@@ -200,21 +268,16 @@ useEffect(() => {
 
 
 const styles = StyleSheet.create({
-  
-
 icon:{
-paddingRight:15
+ paddingRight:15
 },
 bottomSheet:{
   paddingHorizontal:10,
  
 },
-container:{
-  flex:1,
-  position:'relative',
-  alignItems:'center',
-  justifyContent:'center'
-},
+rockets:{
+  flexDirection:'row'
+}
 
 });
 
