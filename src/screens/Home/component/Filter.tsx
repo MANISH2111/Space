@@ -12,7 +12,7 @@ const Select=styled(TouchableOpacity)<{isSelected?:Boolean}> `
     width:110px;
     height:40px;
     border:${(props) =>
-		props.isSelected ? '1px solid black':'1px solid grey' };;
+		props.isSelected ? '1.3px solid black':'1px solid grey' };;
     text-align:center;
     justify-content:center;
     border-radius:20px;
@@ -24,6 +24,8 @@ font-size:14px;
 font-weight:${(props) =>
 		props.isSelected ? 600:'normal' };
 text-align:center;
+color:${(props) =>
+		props.isSelected ? 'black':'darkgray' };
 `
 const FilterButton:React.ComponentType<Props>=({isSelected,onPress,name})=>{
 

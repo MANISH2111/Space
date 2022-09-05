@@ -1,4 +1,4 @@
-import { Button, FlatList,StyleSheet, Text, TouchableOpacity, View, } from 'react-native'
+import {  FlatList,StyleSheet, Text, TouchableOpacity, View, } from 'react-native'
 import React,{useEffect, useCallback,useState, useRef} from 'react'
 import styled from 'styled-components/native'
 import { FontAwesome } from '@expo/vector-icons'; 
@@ -9,21 +9,14 @@ import { StackNavigationProp } from '@react-navigation/stack'
 
 import { FlexCol, FlexRow } from '../../components/atom/Flex'
 import { useAppDispatch,useAppSelector } from '../../hooks'
-import { getLaunches, sortLaunches } from '../../store/actions'
+import { filteredLaunches, getLaunches, sortLaunches } from '../../store/actions'
 import { MainStackParamList } from '../../navigation'
 import { SpaceCard } from './component/SpaceCard';
 import { Gutter } from '../../components/atom';
 import { SORT_DATA, } from '../../data';
 import { FilterButton } from './component/Filter';
 
-const Wrapper = styled(FlexCol)`
-  padding:10px;
-	height: 100%;
-	flex: 1;
-  background-color:#ffffff;
-  justify-content:center;
-  align-items:center;
-`
+
 const CText=styled(Text)<{isSelected?:Boolean}>`
 font-size:15px;
 font-weight:${(props) =>
@@ -55,31 +48,29 @@ type Filter={
 
 const Home : React.ComponentType<Props>=({ navigation })=> {
 
-  const dispatch=useAppDispatch()
+      const dispatch=useAppDispatch()
 
-  const data=useAppSelector(state=>state.launch.filteredLaunches)
+      const data=useAppSelector(state=>state.launch.filteredLaunches)
 
-  const rocketData=(data: { rocket: { rocket_name: String; }; }[])=>{
-    let temp:any=[]
-    data.forEach((element: { rocket: { rocket_name: String; }; }) => {
-      let x=temp.includes(element.rocket.rocket_name)
-     if(!x){
-      temp.push(element.rocket.rocket_name)
-     }
-    });
-    return temp
+const rocketData=(data: { rocket: { rocket_name: String; }; }[])=>{
+      const x=data.map(y=>y.rocket.rocket_name) 
+  return x
   }
-  
+
+ 
   const rocketArray=rocketData(data)
+  let x=Array.from (new Set(rocketArray))
+ 
+console.log("CCCCCCCCCCCCCCCCCCCCC",x)
   
-  const rocketsDataArray = rocketArray.slice().map(function (item: { [x: string]: any; },i: any) {
-    var obj = {};
-    obj['id']=i
-    obj['name']=item
-    obj['selected']=false
-    return obj;
+var rocketsDataArray = x.map(function (item:any,i) {
+    return{
+      id:i,
+      name:item,
+      selected:false
+    }
   });
-    
+  console.log("VVVVVVVVVV",rocketsDataArray)
   
 const SortObj:Sort={
   sort:'',
@@ -89,7 +80,8 @@ const FObj:Filter={
   rockets:[]
 }
 
-const [rocketsFilter,setRocketsFilter]=useState(rocketsDataArray)
+//const [rocketsFilter,setRocketsFilter]=useState(rocketsDataArray)
+
 
 const [value,setValue]=useState<String>('date')
 
@@ -101,18 +93,25 @@ const[filterObj,setFilterObj]=useState(FObj)
 
 
 const handleFilterSelect=(val: any,index: any)=>{
-  let temp=rocketsFilter.map((item: any,i: any)=>{
+
+  let temp=rocketsDataArray.map((item: any,i: any)=>{
     return index===i?{...item,selected:val}:item
   })
-  setRocketsFilter(temp)
+ 
+  // setRocketsFilter(temp)
+  // console.log('PPPPPPPPPPPPPPPP',rocketsFilter)
   setIsSelected(!isSelected)
+  
+  const newRocketFilters=temp.filter((x: { selected: Boolean; })=>x.selected===true).map((x: { name: any; })=>x.name)
   const obj=Object.assign({},filterObj,{
-   
+    rockets:newRocketFilters
  
   })
   setFilterObj(obj)
+  console.log('NNNNNNNNNNN',newRocketFilters)
+  dispatch(filteredLaunches(obj))
 }
-console.log('SSSSSSSSSSSSSS',filterObj)
+
 
 const handleSort = ( val:String) => {
   const obj = Object.assign({}, sortObj, {
@@ -123,8 +122,6 @@ const handleSort = ( val:String) => {
   dispatch(sortLaunches(obj));
   setValue(val);
 }
-
-
 
   const bottomSortSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -162,10 +159,7 @@ React.useLayoutEffect(() => {
   }, [navigation]);
 
 
-const RenderCard = useCallback(({ item }:any) => {
-		return <SpaceCard item={item} />
-   
-	}, []);
+
 
   const renderBackdrop = useCallback(
     (    props: JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
@@ -178,24 +172,25 @@ const RenderCard = useCallback(({ item }:any) => {
     []
   );
 
+  useEffect(() => {
+    //@ts-ignore
+    dispatch(getLaunches());
+    
+  }, [dispatch]);
 
- 
-
-useEffect(() => {
-  //@ts-ignore
-  dispatch(getLaunches());
-  
-}, [dispatch]);
 
   return (
-     <Wrapper>
+ 
+      <>
           <FlatList 
           data={data}
+          contentContainerStyle={styles.container}
           renderItem={({ item }) => (
-                <RenderCard 
-                  key={item.flight_number}
-                  item={item} />)}              
-                  numColumns={2}
+            <SpaceCard 
+            item={item} 
+            key={item.flight_number} />
+              )}              
+            numColumns={2}
           />
 
 <BottomSheetModalProvider>
@@ -221,11 +216,13 @@ useEffect(() => {
                   <FlexRow >
                    <CText isSelected={isFocused}>{item.name}</CText>
                      <Gutter hSpacing={10}/>
-                      <Ionicons name="checkmark-sharp" size={24} color={isFocused?'#148512':'gray'} />
+                  
+                      <Ionicons name="checkmark-sharp" size={24} color={isFocused?'#148512':'white'} />
                    </FlexRow>
                   <Gutter spacing={1.3}/>
             </TouchableOpacity>) 
              })}
+
             </FlexCol> 
           </View>
 
@@ -243,26 +240,26 @@ useEffect(() => {
           <View  >
           <NText fSize={16} fWeight='bold'>Filter</NText>
                 <RocketButton>
-                  {rocketsFilter.map((item: { name: String; selected: Boolean | undefined; },index:number)=>{
+                  {rocketsDataArray.map((item: { name: String; selected: Boolean ; },index:number)=>{
                     return ( 
                         <FilterButton
                         key={index} 
                         name={item.name} 
-                        isSelected={rocketsFilter[index].selected}
+                        isSelected={rocketsDataArray[index].selected}
                         onPress={()=>handleFilterSelect(!item.selected,index)}
                         />
                         )
-                    
-                      })}
                    
+                      })}
+                  
                    </RocketButton>
                 
           </View>
 
 </BottomSheetModal>
 </BottomSheetModalProvider>
-      
-    </Wrapper>
+</>
+  
   )
 }
 
@@ -277,8 +274,13 @@ bottomSheet:{
 },
 rockets:{
   flexDirection:'row'
-}
+},
+container:{
 
+  justifyContent:'center',
+  alignItems:'center',
+  
+}
 });
 
 export{Home}

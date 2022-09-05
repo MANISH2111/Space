@@ -48,6 +48,25 @@ export default function (state = initialState, action: LaunchActionTypes) {
                     filteredLaunches: sortData,
                     loading: false,
                 };
+                // case FILTER_LAUNCHES:
+                //     const filterRocket=action.payload
+                //     console.log('AAAAAAAAAAAAAA',filterRocket)
+
+                //     let filterRocketData=[...state.filteredLaunches];
+               
+                //     const x=filterRocket.rockets.length
+                //     if(x>0){
+                //     //  return filterRocketData.filter(item=>filterRocket.rocket .every((x: any)=>item.rocket.rocket_name===x))
+                //    return filterRocket.rockets.map((x: any) => {
+                //         filterRocketData.filter(y=>y.rocket.rocket_name===x)
+                //     });
+                
+                //     }
+                //     return{
+                //         ...state,
+                //         filteredLaunches: filterRocketData,
+                //         loading: false,
+                //     }
             
         default:
             return state;
