@@ -38,7 +38,7 @@ const LoadNavigator = ({
 	}, [isNavigationReady]);
 
 	const onStateChange = useCallback(
-		(state?:any) =>
+		(state?: any) =>
 			AsyncStorage.setItem(
 				NAVIGATION_STATE_KEY,
 				JSON.stringify(state) || '',

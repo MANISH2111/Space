@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { MainStackParamList } from '../navigation';
 
-export type RouteNames=keyof MainStackParamList
+export type RouteNames = keyof MainStackParamList;
 
 // @ts-ignore
 export const navigationRef = React.createRef<NavigationContainerRef>();

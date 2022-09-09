@@ -1,10 +1,8 @@
-
-import { combineReducers } from 'redux'
-import  LaunchReducer from './launchReducer'
+import { combineReducers } from 'redux';
+import LaunchReducer from './launchReducer';
 
 const rootReducer = combineReducers({
-    launch: LaunchReducer
-})
+	launch: LaunchReducer,
+});
 
-
-export { rootReducer}
+export { rootReducer };

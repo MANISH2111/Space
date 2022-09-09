@@ -19,4 +19,4 @@ export const Gutter = ({ spacing = 1, hSpacing = 0 }: Props) => {
 	);
 
 	return <View style={styles.gutter} />;
-}
+};
