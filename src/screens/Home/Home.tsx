@@ -18,22 +18,20 @@ import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typesc
 import { StackNavigationProp } from '@react-navigation/stack';
 
 import { FlexCol, FlexRow } from '../../components/atom/Flex';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import {
-	filteredLaunches,
-	getLaunches,
-	sortLaunches,
-} from '../../store/actions';
+import { useAppSelector } from '../../hooks';
+import { getLaunches, sortLaunches } from '../../store/actions';
 import { MainStackParamList } from '../../navigation';
 import { SpaceCard } from './component/SpaceCard';
 import { Gutter } from '../../components/atom';
 import { SORT_DATA } from '../../data';
 import { AllFilter } from './component/filter';
+import { useDispatch } from 'react-redux';
 
 const CText = styled(Text)<{ isSelected?: Boolean }>`
 	font-size: 13px;
-	font-weight: ${(props) => (props.isSelected ? 'bold' : 'normal')};
+	color: ${(props) => (props.isSelected ? 'black' : 'grey')};
 	text-align: center;
+	font-weight: bold;
 `;
 
 const NText = styled(Text)<{
@@ -54,16 +52,17 @@ type Sort = {
 };
 
 const Home: React.ComponentType<Props> = ({ navigation }) => {
-	const dispatch = useAppDispatch();
+	const dispatch = useDispatch();
 
 	const data = useAppSelector((state) => state.launch.filteredLaunch);
+	const dataFil = useAppSelector((state) => state.launch.launches);
 
-	const rocketData = (data: { rocket: { rocket_name: String } }[]) => {
-		const x = data.map((y) => y.rocket.rocket_name);
+	const rocketData = (dataFil: { rocket: { rocket_name: String } }[]) => {
+		const x = dataFil.map((y) => y.rocket.rocket_name);
 		return x;
 	};
 
-	const rocketArray = rocketData(data);
+	const rocketArray = rocketData(dataFil);
 
 	let x = Array.from(new Set(rocketArray));
 
@@ -85,7 +84,7 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 			sort: val,
 		});
 		setSortObj(obj);
-		//@ts-ignore
+
 		dispatch(sortLaunches(obj));
 		setValue(val);
 	};
@@ -93,7 +92,7 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 	const bottomSortSheetModalRef = useRef<BottomSheetModal>(null);
 
 	const bottomFilterSheetModalRef = useRef<BottomSheetModal>(null);
-	// callbacks
+
 	const handlePresentModalPress = useCallback(() => {
 		bottomSortSheetModalRef.current?.present();
 	}, []);
@@ -174,7 +173,11 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 						</NText>
 						<Gutter spacing={1.3} />
 
-						<FlexCol justifyContent="center" alignItems="center">
+						<FlexCol
+							justifyContent="space-around"
+							alignItems="flex-start"
+							style={{ marginLeft: '20%' }}
+						>
 							{SORT_DATA.map((item, index) => {
 								const name: String = item.value;
 								const isFocused = value === name;
@@ -188,7 +191,7 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 											<CText isSelected={isFocused}>
 												{item.name}
 											</CText>
-											<Gutter hSpacing={10} />
+											<Gutter hSpacing={8} />
 
 											<Ionicons
 												name="checkmark-sharp"
@@ -200,7 +203,7 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 												}
 											/>
 										</FlexRow>
-										<Gutter spacing={1.3} />
+										<Gutter spacing={1} />
 									</TouchableOpacity>
 								);
 							})}

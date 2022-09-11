@@ -34,8 +34,9 @@ export default function (state = initialState, action: LaunchActionTypes) {
 			};
 		case SORT_LAUNCHES:
 			const sortObj = action.payload;
+			console.log('FFFFFFFFFFFFFF', sortObj);
 			let sortData = [...state.filteredLaunch];
-			console.log('FFFFFFFFFFFFFF', sortData);
+
 			if (sortObj.sort === 'name') {
 				sortData = sortData.sort((a, b) =>
 					a.mission_name.localeCompare(b.mission_name),
@@ -49,21 +50,27 @@ export default function (state = initialState, action: LaunchActionTypes) {
 			}
 			return {
 				...state,
-				filteredLaunches: sortData,
+				filteredLaunch: sortData,
 				loading: false,
 			};
 		case FILTER_LAUNCHES:
-			const filterRocket = action.payload;
+			const filter = action.payload;
+			const filterRocket=filter.rockets
 			console.log('AAAAAAAAAAA', filterRocket);
-			let filterRocketData = [...state.filteredLaunch];
+			let filterRocketData = [...state.launches];
 
-			const x = filterRocket.length;
-			if (x > 0) {
-				//  return filterRocketData.filter(item=>filterRocket.rocket .every((x: any)=>item.rocket.rocket_name===x))
-				return filterRocket.rockets.map((z: any) => {
-					filterRocketData.filter((y) => y.rocket.rocket_name === z);
-				});
+			if (filterRocket.length === 0) {
+				filterRocketData = [...state.launches];
+			} else {
+				filterRocketData = filterRocket
+					.map((z: any) =>
+						filterRocketData.filter(
+							(y) => y.rocket.rocket_name === z,
+						),
+					)
+					.flat();
 			}
+			console.log('XXXXXXXXXXXXXXXXXX', filterRocketData);
 			return {
 				...state,
 				filteredLaunch: filterRocketData,

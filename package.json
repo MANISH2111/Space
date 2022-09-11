@@ -37,7 +37,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.12.9",
-		"@types/react": "~18.0.14",
+		"@types/react": "~18.0.0",
 		"@types/react-native": "~0.69.1",
 		"@types/redux-logger": "^3.0.9",
 		"@types/styled-components": "^5.1.26",

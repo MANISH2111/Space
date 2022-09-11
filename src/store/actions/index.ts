@@ -32,7 +32,7 @@ export const getAllLaunches = (payload: any) => ({
 	payload,
 });
 
-export const filteredLaunches = (payload: any) => ({
+export const filterLaunches = (payload: any) => ({
 	type: FILTER_LAUNCHES,
 	payload,
 });

@@ -2,13 +2,16 @@ import React, { FunctionComponent, useCallback, useState } from 'react';
 import styled from 'styled-components/native';
 import { Button, Text } from 'react-native';
 import { FilterButton } from './Filter';
-import { FlexRow } from '../../../../components/atom';
+import { FlexRow, Gutter } from '../../../../components/atom';
 import {
 	BottomSheetBackdropProps,
 	BottomSheetModal,
 	BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import { useDispatch } from 'react-redux';
+import { filterLaunches } from '../../../../store/actions';
+import { ROCKET_UPCOMING } from '../../../../data';
 
 const RocketButton = styled(FlexRow)`
 	width: 60%;
@@ -28,6 +31,7 @@ const NText = styled(Text)<{
 
 type Filter = {
 	rockets: [];
+	upcoming:[]
 };
 type Props = {
 	filterArray: any;
@@ -44,11 +48,12 @@ const AllFilter: React.ComponentType<Props> = ({
 }) => {
 	const FObj: Filter = {
 		rockets: [],
+		upcoming:[]
 	};
-
 	const [rocketsFilter, setRocketsFilter] = useState([]);
 
 	const [filterObj, setFilterObj] = useState(FObj);
+	const dispatch = useDispatch();
 
 	const handleRocketFilter = useCallback(
 		(item: any) => {
@@ -68,17 +73,20 @@ const AllFilter: React.ComponentType<Props> = ({
 		[rocketsFilter],
 	);
 
-	const handleFilter = useCallback(async (newRocketFilters: any) => {
-		try {
-			const obj = Object.assign({}, filterObj, {
-				rockets: newRocketFilters,
-			});
-			setFilterObj(obj);
-			console.log('PPPPPPPPPPP', obj.rockets);
-			//@ts-ignore
-			dispatch(filteredLaunches(obj));
-		} catch (error) {}
-	}, []);
+	const handleFilter = useCallback(
+		(newRocketFilters: any) => {
+			try {
+				const obj = Object.assign({}, filterObj, {
+					rockets: newRocketFilters,
+				});
+				setFilterObj(obj);
+				console.log('PPPPPPPPPPP', obj.rockets);
+
+				dispatch(filterLaunches(obj));
+			} catch (error) {}
+		},
+		[dispatch],
+	);
 
 	return (
 		<BottomSheetModalProvider>
@@ -108,7 +116,20 @@ const AllFilter: React.ComponentType<Props> = ({
 						);
 					})}
 				</RocketButton>
+						<Gutter spacing={2}/>
+<FlexRow>
+					{ROCKET_UPCOMING.map((item,i)=>{
+						return(
 
+							<FilterButton
+							key={i}
+							name={item.name}
+							isSelected={false}
+							//onPress={() => handleRocketFilter(item)}
+						/>
+						)
+					})}
+					</FlexRow>
 				<Button
 					title="Submit"
 					onPress={() => handleFilter(rocketsFilter)}
