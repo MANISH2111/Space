@@ -4,6 +4,7 @@ import {
 	FILTER_LAUNCHES,
 	GET_LAUNCHES,
 	LaunchActionTypes,
+	RESET_LAUNCH,
 	SORT_LAUNCHES,
 } from '../types';
 
@@ -34,7 +35,7 @@ export default function (state = initialState, action: LaunchActionTypes) {
 			};
 		case SORT_LAUNCHES:
 			const sortObj = action.payload;
-			console.log('FFFFFFFFFFFFFF', sortObj);
+
 			let sortData = [...state.filteredLaunch];
 
 			if (sortObj.sort === 'name') {
@@ -55,12 +56,15 @@ export default function (state = initialState, action: LaunchActionTypes) {
 			};
 		case FILTER_LAUNCHES:
 			const filter = action.payload;
-			const filterRocket=filter.rockets
-			console.log('AAAAAAAAAAA', filterRocket);
+			const filterRocket = filter.rockets;
+			const filterUpcoming = filter.upcoming;
+			const filterSuccess = filter.success;
+			const filterDate = filter.time;
+
 			let filterRocketData = [...state.launches];
 
 			if (filterRocket.length === 0) {
-				filterRocketData = [...state.launches];
+				filterRocketData;
 			} else {
 				filterRocketData = filterRocket
 					.map((z: any) =>
@@ -70,13 +74,57 @@ export default function (state = initialState, action: LaunchActionTypes) {
 					)
 					.flat();
 			}
-			console.log('XXXXXXXXXXXXXXXXXX', filterRocketData);
+
+			if (filterUpcoming.length !== 1) {
+				filterRocketData;
+			} else {
+				if (filterUpcoming.includes('Upcoming'))
+					filterRocketData = filterRocketData
+						.filter((x) => x.upcoming === true)
+						.flat();
+				else {
+					filterRocketData = filterRocketData
+						.filter((x) => x.upcoming === false)
+						.flat();
+				}
+			}
+
+			if (filterSuccess.length !== 1) {
+				filterRocketData;
+			} else {
+				if (filterSuccess.includes('Success')) {
+					filterRocketData = filterRocketData
+						.filter((t) => t.launch_success === true)
+						.flat();
+					console.log('DATATATATA', filterRocketData);
+				} else {
+					filterRocketData = filterRocketData
+						.filter((p) => p.launch_success === false)
+						.flat();
+				}
+			}
+			if (filterDate.StartDate) {
+				filterRocketData = filterRocketData.filter((x) =>
+					moment(x.launch_date_local).isAfter(filterDate.StartDate),
+				);
+			}
+			if (filterDate.EndDate) {
+				filterRocketData = filterRocketData.filter((x) =>
+					moment(x.launch_date_local).isBefore(filterDate.EndDate),
+				);
+			}
+
 			return {
 				...state,
 				filteredLaunch: filterRocketData,
 				loading: false,
 			};
 
+		case RESET_LAUNCH:
+			return {
+				...state,
+				filteredLaunch: state.launches,
+			};
 		default:
 			return state;
 	}

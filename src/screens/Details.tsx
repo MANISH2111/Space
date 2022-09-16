@@ -15,6 +15,7 @@ const Wrapper = styled(FlexCol)`
 	padding: 15px;
 	flex: 1;
 	background-color: #ffffff;
+	width: 100%;
 `;
 const CText = styled(Text)<{
 	fSize?: number;

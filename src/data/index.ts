@@ -3,7 +3,6 @@ export const SORT_DATA = [
 	{ name: 'Mission Date', value: 'date' },
 ];
 
-export const ROCKET_UPCOMING = [
-	{ name: 'Upcoming', value: false },
-	{ name: 'Completed', value: false },
-];
+export const ROCKET_UPCOMING = ['Upcoming', 'Completed'];
+
+export const LAUNCH_SUCCESS = ['Success', 'Failed'];

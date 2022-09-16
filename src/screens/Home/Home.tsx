@@ -1,5 +1,6 @@
 import {
 	FlatList,
+	SafeAreaView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -7,15 +8,16 @@ import {
 } from 'react-native';
 import React, { useEffect, useCallback, useState, useRef } from 'react';
 import styled from 'styled-components/native';
-import { FontAwesome } from '@expo/vector-icons';
+import { Entypo, FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import {
+import BottomSheet, {
 	BottomSheetModal,
 	BottomSheetModalProvider,
 	BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
 import { StackNavigationProp } from '@react-navigation/stack';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import { FlexCol, FlexRow } from '../../components/atom/Flex';
 import { useAppSelector } from '../../hooks';
@@ -38,10 +40,12 @@ const NText = styled(Text)<{
 	fSize?: number;
 	fWeight?: string;
 	align?: string;
+	mLeft?: string;
 }>`
 	font-size: ${(props) => (props.fSize ? `${props.fSize}px` : `14px`)};
 	font-weight: ${(props) => (props.fWeight ? `${props.fWeight}` : `normal`)};
 	text-align: ${(props) => (props.align ? props.align : `center`)};
+	margin-left: ${(props) => (props.mLeft ? `${props.mLeft}px` : 0)};
 `;
 
 type Props = {
@@ -56,6 +60,7 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 
 	const data = useAppSelector((state) => state.launch.filteredLaunch);
 	const dataFil = useAppSelector((state) => state.launch.launches);
+	const loading = useAppSelector((state) => state.launch.loading);
 
 	const rocketData = (dataFil: { rocket: { rocket_name: String } }[]) => {
 		const x = dataFil.map((y) => y.rocket.rocket_name);
@@ -66,17 +71,14 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 
 	let x = Array.from(new Set(rocketArray));
 
-	console.log('CCCCCCCCCCCCCCCCCCCCC', x);
-
-	// const a =['manish','babban','chhagan']
-	// const b=['manish']
+	
 
 	const SortObj: Sort = {
 		sort: '',
 	};
 
 	const [value, setValue] = useState<String>('date');
-
+	const [spinner] = useState(loading);
 	const [sortObj, setSortObj] = useState(SortObj);
 
 	const handleSort = (val: String) => {
@@ -89,20 +91,21 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 		setValue(val);
 	};
 
+	//SORT MODAL
 	const bottomSortSheetModalRef = useRef<BottomSheetModal>(null);
-
-	const bottomFilterSheetModalRef = useRef<BottomSheetModal>(null);
-
 	const handlePresentModalPress = useCallback(() => {
-		bottomSortSheetModalRef.current?.present();
+		bottomSortSheetModalRef.current?.expand();
 	}, []);
+
 	const handleSortSheetChanges = useCallback((index: number) => {
 		bottomSortSheetModalRef.current?.snapToIndex(index);
 	}, []);
-
+	//FILTER MODAL
+	const bottomFilterSheetModalRef = useRef<BottomSheetModal>(null);
 	const handlePresentFiterPress = useCallback(() => {
-		bottomFilterSheetModalRef.current?.present();
+		bottomFilterSheetModalRef.current?.expand();
 	}, []);
+
 	const handleFilterSheetChanges = useCallback((index: number) => {
 		bottomFilterSheetModalRef.current?.snapToIndex(index);
 	}, []);
@@ -148,6 +151,8 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 		dispatch(getLaunches());
 	}, [dispatch]);
 
+	if (loading)
+		return <Spinner visible={spinner} textContent={'SpaceX_Loading...'} />;
 	return (
 		<>
 			<FlatList
@@ -159,24 +164,36 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 				numColumns={2}
 			/>
 
-			<BottomSheetModalProvider>
-				<BottomSheetModal
+		
+				<BottomSheet
 					backdropComponent={renderBackdrop}
 					ref={bottomSortSheetModalRef}
-					index={1}
+					index={-1}
 					snapPoints={[1, '25%']}
 					onChange={handleSortSheetChanges}
 				>
-					<View>
-						<NText fSize={16} fWeight="bold">
-							Sort
-						</NText>
+					<>
+						<FlexRow justifyContent="space-between">
+							<NText mLeft="20" fSize={16} fWeight="bold">
+								Sort
+							</NText>
+							<Entypo
+								onPress={() =>
+									bottomSortSheetModalRef.current?.close()
+								}
+								name="cross"
+								size={24}
+								color="grey"
+								style={styles.icon}
+							/>
+						</FlexRow>
+
 						<Gutter spacing={1.3} />
 
 						<FlexCol
 							justifyContent="space-around"
 							alignItems="flex-start"
-							style={{ marginLeft: '20%' }}
+							style={styles.sort}
 						>
 							{SORT_DATA.map((item, index) => {
 								const name: String = item.value;
@@ -208,15 +225,16 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 								);
 							})}
 						</FlexCol>
-					</View>
-				</BottomSheetModal>
-			</BottomSheetModalProvider>
+					</>
+				</BottomSheet>
+			
 
 			<AllFilter
 				filterArray={x}
 				handleFilterSheetChanges={handleFilterSheetChanges}
 				bottomFilterSheetModalRef={bottomFilterSheetModalRef}
 				renderBackdrop={renderBackdrop}
+				sorts={value}
 			/>
 		</>
 	);
@@ -234,7 +252,11 @@ const styles = StyleSheet.create({
 	},
 	container: {
 		justifyContent: 'center',
-		alignItems: 'center',
+		alignItems: 'flex-start',
+		marginLeft: '8%',
+	},
+	sort: {
+		marginHorizontal: '20%',
 	},
 });
 
