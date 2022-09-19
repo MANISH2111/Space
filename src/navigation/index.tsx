@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 export type MainStackParamList = {
 	SpaceX_Launches: undefined;
+	// Detail screen required param such as flight number
 	Details: undefined;
 };
 

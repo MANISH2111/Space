@@ -9,6 +9,7 @@ type Props = {
 };
 
 const Select = styled(TouchableOpacity)<{ isSelected?: Boolean }>`
+	// y hardcode width and height? if I want long button
 	width: 100px;
 	height: 36px;
 	border: ${(props) =>
@@ -24,6 +25,7 @@ const CText = styled(Text)<{ isSelected?: Boolean }>`
 	font-size: 13px;
 	font-weight: ${(props) => (props.isSelected ? 600 : 'normal')};
 	text-align: center;
+	// y hard code color
 	color: ${(props) => (props.isSelected ? 'black' : 'darkgray')};
 `;
 const FilterButton: React.ComponentType<Props> = ({

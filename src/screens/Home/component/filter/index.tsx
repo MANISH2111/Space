@@ -1,3 +1,4 @@
+// remove unuse import
 import React, {
 	Dispatch,
 	FunctionComponent,
@@ -39,6 +40,7 @@ const NText = styled(Text)<{
 	font-size: ${(props) => (props.fSize ? `${props.fSize}px` : `14px`)};
 	font-weight: ${(props) => (props.fWeight ? `${props.fWeight}` : `normal`)};
 	text-align: ${(props) => (props.align ? props.align : `center`)};
+	// y u use styled component?
 	color: ${(props) => (props.color ? `${props.color}` : `white`)};
 	margin-left: ${(props) => (props.mLeft ? `${props.mLeft}px` : 0)};
 `;
@@ -58,6 +60,7 @@ const DButton = styled(TouchableOpacity)`
 	height: 45px;
 	align-items: center;
 	justify-content: center;
+	// in css no need for string 
 	background-color: 'white';
 	border: 1px solid grey;
 	border-radius: 6px;
@@ -68,16 +71,19 @@ type Filter = {
 	rockets?: [];
 	upcoming?: [];
 	success?: [];
+	// already time is optional why u use startDate as null
 	time?: {
 		StartDate: String | null;
 		EndDate: String | null;
 	};
 };
+
 type Props = {
 	filterArray: any;
 	bottomFilterSheetModalRef: React.RefObject<BottomSheetModalMethods>;
 	renderBackdrop: FunctionComponent<BottomSheetBackdropProps>;
 	handleFilterSheetChanges: (index: number) => void;
+	// here fixed string is required
 	sorts?: String;
 	isFilter?: Boolean;
 	setIsFilter?: Dispatch<SetStateAction<boolean>>;
@@ -100,10 +106,12 @@ const AllFilter: React.ComponentType<Props> = ({
 			EndDate: null,
 		},
 	};
+	// don't use any or don't use typescript
 	const [rocketsFilter, setRocketsFilter] = useState<any>([]);
 	const [upcomingFilter, setUpcomingfilter] = useState<any>([]);
 
 	const [success, setSuccess] = useState<any>([]);
+	// please write outside FObj otherwise every time it initilised
 	const [filterObj, setFilterObj] = useState(FObj);
 	const dispatch = useDispatch();
 
