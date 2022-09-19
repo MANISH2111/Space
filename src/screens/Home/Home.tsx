@@ -1,23 +1,29 @@
 import {
 	FlatList,
-	SafeAreaView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
 } from 'react-native';
-import React, { useEffect, useCallback, useState, useRef } from 'react';
+import React, {
+	useEffect,
+	useCallback,
+	useState,
+	useRef,
+	FunctionComponent,
+	useMemo,
+} from 'react';
 import styled from 'styled-components/native';
 import { Entypo, FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import BottomSheet, {
 	BottomSheetModal,
-	BottomSheetModalProvider,
 	BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { useDispatch } from 'react-redux';
 
 import { FlexCol, FlexRow } from '../../components/atom/Flex';
 import { useAppSelector } from '../../hooks';
@@ -27,7 +33,6 @@ import { SpaceCard } from './component/SpaceCard';
 import { Gutter } from '../../components/atom';
 import { SORT_DATA } from '../../data';
 import { AllFilter } from './component/filter';
-import { useDispatch } from 'react-redux';
 
 const CText = styled(Text)<{ isSelected?: Boolean }>`
 	font-size: 13px;
@@ -47,6 +52,14 @@ const NText = styled(Text)<{
 	text-align: ${(props) => (props.align ? props.align : `center`)};
 	margin-left: ${(props) => (props.mLeft ? `${props.mLeft}px` : 0)};
 `;
+const FBubble = styled(View)<{ isFilter?: Boolean }>`
+	width: 6px;
+	height: 6px;
+	border-radius: 3px;
+	margin-top: 18px;
+	margin-right: 10px;
+	background-color: ${(props) => (props.isFilter ? 'red' : 'transparent')};
+`;
 
 type Props = {
 	navigation: StackNavigationProp<MainStackParamList, 'SpaceX_Launches'>;
@@ -55,7 +68,7 @@ type Sort = {
 	sort?: String;
 };
 
-const Home: React.ComponentType<Props> = ({ navigation }) => {
+const Home: FunctionComponent<Props> = ({ navigation }) => {
 	const dispatch = useDispatch();
 
 	const data = useAppSelector((state) => state.launch.filteredLaunch);
@@ -71,8 +84,6 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 
 	let x = Array.from(new Set(rocketArray));
 
-	
-
 	const SortObj: Sort = {
 		sort: '',
 	};
@@ -80,7 +91,7 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 	const [value, setValue] = useState<String>('date');
 	const [spinner] = useState(loading);
 	const [sortObj, setSortObj] = useState(SortObj);
-
+	const [isFilter, setIsFliter] = useState<boolean>(false);
 	const handleSort = (val: String) => {
 		const obj = Object.assign({}, sortObj, {
 			sort: val,
@@ -110,6 +121,7 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 		bottomFilterSheetModalRef.current?.snapToIndex(index);
 	}, []);
 
+	//HEADER
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => (
@@ -123,17 +135,13 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 						/>
 					</TouchableOpacity>
 					<TouchableOpacity onPress={handlePresentFiterPress}>
-						<FontAwesome
-							style={styles.icon}
-							name="filter"
-							size={22}
-							color="grey"
-						/>
+						<FontAwesome name="filter" size={22} color="grey" />
 					</TouchableOpacity>
+					<FBubble isFilter={isFilter} />
 				</FlexRow>
 			),
 		});
-	}, [navigation]);
+	}, [navigation, isFilter]);
 
 	const renderBackdrop = useCallback(
 		(props: JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
@@ -151,8 +159,11 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 		dispatch(getLaunches());
 	}, [dispatch]);
 
-	if (loading)
+	//LOADING SPINNER
+	if (loading) {
 		return <Spinner visible={spinner} textContent={'SpaceX_Loading...'} />;
+	}
+
 	return (
 		<>
 			<FlatList
@@ -164,77 +175,74 @@ const Home: React.ComponentType<Props> = ({ navigation }) => {
 				numColumns={2}
 			/>
 
-		
-				<BottomSheet
-					backdropComponent={renderBackdrop}
-					ref={bottomSortSheetModalRef}
-					index={-1}
-					snapPoints={[1, '25%']}
-					onChange={handleSortSheetChanges}
-				>
-					<>
-						<FlexRow justifyContent="space-between">
-							<NText mLeft="20" fSize={16} fWeight="bold">
-								Sort
-							</NText>
-							<Entypo
-								onPress={() =>
-									bottomSortSheetModalRef.current?.close()
-								}
-								name="cross"
-								size={24}
-								color="grey"
-								style={styles.icon}
-							/>
-						</FlexRow>
+			<BottomSheet
+				backdropComponent={renderBackdrop}
+				ref={bottomSortSheetModalRef}
+				index={-1}
+				snapPoints={[1, '25%']}
+				onChange={handleSortSheetChanges}
+			>
+				<>
+					<FlexRow justifyContent="space-between">
+						<NText mLeft="20" fSize={16} fWeight="bold">
+							Sort
+						</NText>
+						<Entypo
+							onPress={() =>
+								bottomSortSheetModalRef.current?.close()
+							}
+							name="cross"
+							size={24}
+							color="grey"
+							style={styles.icon}
+						/>
+					</FlexRow>
 
-						<Gutter spacing={1.3} />
+					<Gutter spacing={1.3} />
+					{/*SORTING VIEW */}
+					<FlexCol
+						justifyContent="space-around"
+						alignItems="flex-start"
+						style={styles.sort}
+					>
+						{SORT_DATA.map((item, index) => {
+							const name: String = item.value;
+							const isFocused = value === name;
 
-						<FlexCol
-							justifyContent="space-around"
-							alignItems="flex-start"
-							style={styles.sort}
-						>
-							{SORT_DATA.map((item, index) => {
-								const name: String = item.value;
-								const isFocused = value === name;
+							return (
+								<TouchableOpacity
+									key={index}
+									onPress={() => handleSort(name)}
+								>
+									<FlexRow>
+										<CText isSelected={isFocused}>
+											{item.name}
+										</CText>
+										<Gutter hSpacing={8} />
 
-								return (
-									<TouchableOpacity
-										key={index}
-										onPress={() => handleSort(name)}
-									>
-										<FlexRow>
-											<CText isSelected={isFocused}>
-												{item.name}
-											</CText>
-											<Gutter hSpacing={8} />
-
-											<Ionicons
-												name="checkmark-sharp"
-												size={24}
-												color={
-													isFocused
-														? '#148512'
-														: 'white'
-												}
-											/>
-										</FlexRow>
-										<Gutter spacing={1} />
-									</TouchableOpacity>
-								);
-							})}
-						</FlexCol>
-					</>
-				</BottomSheet>
-			
-
+										<Ionicons
+											name="checkmark-sharp"
+											size={24}
+											color={
+												isFocused ? '#148512' : 'white'
+											}
+										/>
+									</FlexRow>
+									<Gutter spacing={1} />
+								</TouchableOpacity>
+							);
+						})}
+					</FlexCol>
+				</>
+			</BottomSheet>
+			{/* FILTER VIEW */}
 			<AllFilter
 				filterArray={x}
 				handleFilterSheetChanges={handleFilterSheetChanges}
 				bottomFilterSheetModalRef={bottomFilterSheetModalRef}
 				renderBackdrop={renderBackdrop}
 				sorts={value}
+				setIsFilter={setIsFliter}
 			/>
 		</>
 	);
@@ -257,6 +265,11 @@ const styles = StyleSheet.create({
 	},
 	sort: {
 		marginHorizontal: '20%',
+	},
+	nodata: {
+		fontSize: 30,
+		fontWeight: 'bold',
+		marginTop: '50%',
 	},
 });
 
