@@ -117,19 +117,23 @@ const AllFilter: React.ComponentType<Props> = ({
 
 	const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 	const [isDateVsisble, setDateVisible] = useState(false);
+	// y unnecessary initial state
 	const [date, setDate] = useState({ StartDate: null, EndDate: null });
 
+	// pathetic way to handle it please work on reusable component
 	const showDatePicker = (index: number) => {
 		index === 0 ? setDatePickerVisibility(true) : setDateVisible(true);
 	};
 
+	// pathetic way to handle it please work on reusable component
 	const hideDatePicker = (index: number) => {
 		index === 0 ? setDatePickerVisibility(false) : setDateVisible(false);
 	};
 
-	//FILTER METHODS
+	//understand use callback vs useMemo
 	const handleRocketFilter = useCallback(
 		(item: any) => {
+			// please fix this, not a good way
 			const index = rocketsFilter.findIndex((x: any) => x === item);
 
 			if (index < 0) {
@@ -138,11 +142,15 @@ const AllFilter: React.ComponentType<Props> = ({
 				const selectedRocket = Array.from(rocketsFilter);
 				selectedRocket.splice(index, 1);
 				setRocketsFilter(selectedRocket);
+
+				// you can write this way
+				// setRocketsFilter(Array.from(rocketsFilter).splice(index, 1))
 			}
 		},
 		[rocketsFilter],
 	);
 
+	// code above are same so you can merge it into one
 	const handleUpcomingFilter = useCallback(
 		(item: any) => {
 			const index = upcomingFilter.findIndex((x: any) => x === item);
@@ -157,6 +165,8 @@ const AllFilter: React.ComponentType<Props> = ({
 		},
 		[upcomingFilter],
 	);
+
+	// oh man please fix this all code are same
 	const handleRocketSuccess = useCallback(
 		(item: any) => {
 			const index = success.findIndex((x: any) => x === item);
@@ -171,6 +181,7 @@ const AllFilter: React.ComponentType<Props> = ({
 		},
 		[success],
 	);
+
 	//RESET METHOD
 	const handleRest = useCallback(() => {
 		try {
@@ -183,12 +194,15 @@ const AllFilter: React.ComponentType<Props> = ({
 			bottomFilterSheetModalRef.current?.close();
 		} catch (error) {
 		} finally {
+			// please don't comment
 			//@ts-ignore
 			setIsFilter(false);
 		}
 	}, [dispatch, FObj]);
 
 	//ALL FILTER DISPATCH
+
+	// bhai any nhi please
 	const handleFilter = useCallback(
 		(
 			newRocketFilters: any,
@@ -204,6 +218,7 @@ const AllFilter: React.ComponentType<Props> = ({
 					time: newTime,
 				});
 				setFilterObj(obj);
+				// kya hai
 				//@ts-ignore
 				setIsFilter(JSON.stringify(filterObj) !== JSON.stringify(obj));
 
@@ -216,6 +231,8 @@ const AllFilter: React.ComponentType<Props> = ({
 		},
 		[dispatch, FObj, sorts],
 	);
+
+	// massive use of usecallback
 	//DATE FILTER
 	const handleDateConfirm = useCallback(
 		(index: number, value: Date) => {
@@ -287,6 +304,7 @@ const AllFilter: React.ComponentType<Props> = ({
 			{/* ROCKET FILTER */}
 			<RocketButton>
 				{filterArray.map((item: String, index: number) => {
+					/* sala jaha use callback chahiyea waha kuch nhi hai*/
 					return (
 						<>
 							<FilterButton
@@ -316,6 +334,7 @@ const AllFilter: React.ComponentType<Props> = ({
 					</NText>
 					<FlexRow alignItems="flex-start">
 						{ROCKET_UPCOMING.map((xx, i) => {
+							/* sala xxx hi likh de*/
 							return (
 								<FilterButton
 									key={xx}

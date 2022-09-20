@@ -64,6 +64,8 @@ const FBubble = styled(View)<{ isFilter?: Boolean }>`
 type Props = {
 	navigation: StackNavigationProp<MainStackParamList, 'SpaceX_Launches'>;
 };
+
+// kya hai bhai yea?
 type Sort = {
 	sort?: String;
 };
@@ -101,6 +103,8 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
 		dispatch(sortLaunches(obj));
 		setValue(val);
 	};
+
+	/* Coding ka style hota hai hook, effect etc yaha kya ho raha hai??*/
 
 	//SORT MODAL
 	const bottomSortSheetModalRef = useRef<BottomSheetModal>(null);
@@ -155,6 +159,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
 	);
 
 	useEffect(() => {
+		// kya hai yea ???
 		//@ts-ignore
 		dispatch(getLaunches());
 	}, [dispatch]);
@@ -209,7 +214,7 @@ const Home: FunctionComponent<Props> = ({ navigation }) => {
 							const name: String = item.value;
 							const isFocused = value === name;
 
-							return (
+							return (/*?????*/
 								<TouchableOpacity
 									key={index}
 									onPress={() => handleSort(name)}

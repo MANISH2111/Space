@@ -63,6 +63,7 @@ export default function (state = initialState, action: LaunchActionTypes) {
 
 			let filterRocketData = [...state.launches];
 
+			// no use of the code
 			if (filterRocket.length === 0) {
 				filterRocketData;
 			} else {

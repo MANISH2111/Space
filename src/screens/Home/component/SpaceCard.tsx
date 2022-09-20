@@ -38,7 +38,7 @@ const NText = styled(Text)`
 const SpaceCard = ({ item }: any) => (
 	<FlexCol alignSelf="center">
 		<TouchableOpacity
-			onPress={() =>
+			onPress={() =>/* kya hai yea tatti ???*/
 				navigate('Details', {
 					mission_name: item.mission_name,
 					launch_site: item.launch_site,
